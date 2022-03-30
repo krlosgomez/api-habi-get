@@ -1,5 +1,7 @@
-import { Owner } from 'src/owners/entities/owner.entity';
-import { Entity, Column, CreateDateColumn, OneToMany, ManyToOne } from 'typeorm';
+import { Entity, Column, CreateDateColumn, ManyToOne } from 'typeorm';
+
+/* infrastructures */
+import { Owner } from '../infrastructure/owner/owner.entity';
 
 @Entity()
 export class Apartment {

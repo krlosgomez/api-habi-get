@@ -1,9 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import ValidationException from 'src/shared/validations/validationError';
-import { FindConditions, FindManyOptions, ILike, Like, ObjectLiteral, Repository } from 'typeorm';
+import { FindConditions, FindManyOptions, ILike, Repository } from 'typeorm';
+
+/* Dtos */
 import { FindApartmentDto } from './dto/find-apartment.dto';
 import { ListApartmentDto } from './dto/list-apartments.dto';
+/* Entities */
 import { Apartment } from './entities/apartment.entity';
 
 @Injectable()
@@ -27,21 +29,23 @@ export class ApartmentsService {
       where,
       order: { created_at: params.order },
       take: params.limit,
-      skip: params.limit * (params.page - 1)
+      skip: params.limit * (params.page - 1),
+      loadRelationIds: true
     };
 
     const [apartmentsFound, total] = await this.apartmentRepository.findAndCount(options);
+    const pages = total % params.limit > 0 ? Math.trunc(total / params.limit) + 1 : Math.trunc(total / params.limit);
     return {
       apartments: apartmentsFound,
       page: parseInt(params.page.toString(), 10),
-      pages: total > params.limit ? Math.trunc(total / params.limit) : 1,
+      pages,
       total: total,
       limit: parseInt(params.limit.toString(), 10)
     };
   }
 
-  findOne(id: string) {
-    return this.apartmentRepository.findOne(id);
+  async findOne(id: string) {
+    return await this.apartmentRepository.findOne(id);
   }
 
 }

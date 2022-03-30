@@ -8,5 +8,7 @@ export class CreateOwnerDto {
   @ApiProperty()
   phone: string;
   @ApiProperty()
+  countryCode: string;
+  @ApiProperty()
   email: string;
 }
