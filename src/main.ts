@@ -9,7 +9,7 @@ async function bootstrap() {
   if (config().isDev) {
 
     const document = SwaggerModule.createDocument(app, new DocumentBuilder()
-      .setTitle('Habi API')
+      .setTitle('API Habi Get')
       .setDescription('My Habi API')
       .build());
 

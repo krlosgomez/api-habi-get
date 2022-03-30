@@ -43,7 +43,7 @@ export class Apartment {
     type: 'date',
     default: () => 'CURRENT_TIMESTAMP'
   })
-  created_at: string;
+  created_at: Date;
 
   @ManyToOne(type => Owner, owner => owner.id)
   id_owner: string;

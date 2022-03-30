@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import ValidationException from 'src/shared/validations/validationError';
-import { Repository } from 'typeorm';
-import { CreateApartmentDto } from './dto/create-apartment.dto';
-import { UpdateApartmentDto } from './dto/update-apartment.dto';
+import { FindConditions, FindManyOptions, ILike, Like, ObjectLiteral, Repository } from 'typeorm';
+import { FindApartmentDto } from './dto/find-apartment.dto';
+import { ListApartmentDto } from './dto/list-apartments.dto';
 import { Apartment } from './entities/apartment.entity';
 
 @Injectable()
@@ -14,41 +14,34 @@ export class ApartmentsService {
     private apartmentRepository: Repository<Apartment>,
   ) { }
 
-  async create(createApartmentDto: CreateApartmentDto): Promise<CreateApartmentDto> {
-    const RApartment = this.apartmentRepository;
+  async findAll(params: FindApartmentDto): Promise<ListApartmentDto> {
 
-    const apartmentFount = await this.findOne(createApartmentDto.id);
-    if (apartmentFount) {
-      throw new ValidationException('El id ya existe.');
+    const where: FindConditions<Apartment> = {};
+    if (params.location) {
+      where.location = ILike(`%${params.location}%`);
     }
+    if (params.created_at) {
+      where.created_at = params.created_at;
+    }
+    const options: FindManyOptions<Apartment> = {
+      where,
+      order: { created_at: params.order },
+      take: params.limit,
+      skip: params.limit * (params.page - 1)
+    };
 
-    const apartmentCreated = await RApartment.save({
-      id: createApartmentDto.id,
-      area: createApartmentDto.area,
-      address: createApartmentDto.address,
-      city: createApartmentDto.city,
-      location: createApartmentDto.location,
-      number_rooms: createApartmentDto.number_rooms,
-      price: createApartmentDto.price,
-      id_owner: createApartmentDto.id_owner
-    });
-
-    return apartmentCreated;
-  }
-
-  findAll() {
-    return `This action returns all apartments`;
+    const [apartmentsFound, total] = await this.apartmentRepository.findAndCount(options);
+    return {
+      apartments: apartmentsFound,
+      page: parseInt(params.page.toString(), 10),
+      pages: total > params.limit ? Math.trunc(total / params.limit) : 1,
+      total: total,
+      limit: parseInt(params.limit.toString(), 10)
+    };
   }
 
   findOne(id: string) {
     return this.apartmentRepository.findOne(id);
   }
 
-  update(id: number, updateApartmentDto: UpdateApartmentDto) {
-    return `This action updates a #${id} apartment`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} apartment`;
-  }
 }
