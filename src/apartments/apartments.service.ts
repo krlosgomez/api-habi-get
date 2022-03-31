@@ -37,10 +37,10 @@ export class ApartmentsService {
     const pages = total % params.limit > 0 ? Math.trunc(total / params.limit) + 1 : Math.trunc(total / params.limit);
     return {
       apartments: apartmentsFound,
-      page: parseInt(params.page.toString(), 10),
+      page: +params.page,
       pages,
       total: total,
-      limit: parseInt(params.limit.toString(), 10)
+      limit: params.limit ? +params.limit : 10
     };
   }
 
