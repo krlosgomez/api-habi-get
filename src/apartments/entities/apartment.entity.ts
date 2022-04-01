@@ -1,4 +1,4 @@
-import { Entity, Column, CreateDateColumn, ManyToOne } from 'typeorm';
+import { Entity, Column, CreateDateColumn, ManyToOne, JoinColumn } from 'typeorm';
 
 /* infrastructures */
 import { Owner } from '../infrastructure/owner/owner.entity';
@@ -42,11 +42,12 @@ export class Apartment {
   city: string;
 
   @CreateDateColumn({
-    type: 'date',
+    type: 'timestamp',
     default: () => 'CURRENT_TIMESTAMP'
   })
   created_at: Date;
 
   @ManyToOne(type => Owner, owner => owner.id)
-  id_owner: string;
+  @JoinColumn({ name: "owner_id" })
+  owner: string;
 }

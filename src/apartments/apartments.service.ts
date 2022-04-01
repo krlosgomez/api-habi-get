@@ -19,6 +19,12 @@ export class ApartmentsService {
   async findAll(params: FindApartmentDto): Promise<ListApartmentDto> {
 
     const where: FindConditions<Apartment> = {};
+    if (!params.limit) {
+      params.limit = 10;
+    }
+    if (!params.order) {
+      params.order = 'DESC';
+    }
     if (params.location) {
       where.location = ILike(`%${params.location}%`);
     }
@@ -27,10 +33,10 @@ export class ApartmentsService {
     }
     const options: FindManyOptions<Apartment> = {
       where,
-      order: { created_at: params.order },
+      order: params.location ? { location: params.order } : { created_at: params.order },
       take: params.limit,
       skip: params.limit * (params.page - 1),
-      loadRelationIds: true
+      relations: ['owner']
     };
 
     const [apartmentsFound, total] = await this.apartmentRepository.findAndCount(options);
@@ -38,7 +44,7 @@ export class ApartmentsService {
     return {
       apartments: apartmentsFound,
       page: +params.page,
-      pages,
+      pages: pages,
       total: total,
       limit: params.limit ? +params.limit : 10
     };

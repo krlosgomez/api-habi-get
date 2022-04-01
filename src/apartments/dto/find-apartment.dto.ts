@@ -10,5 +10,5 @@ export class FindApartmentDto {
   @ApiProperty({ default: 10, required: false })
   limit?: number = 10;
   @ApiProperty({ enum: ['ASC', 'DESC'], default: 'ASC', required: false })
-  order: "ASC" | "DESC" = 'ASC';
+  order: "ASC" | "DESC" = 'DESC';
 }
